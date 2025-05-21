@@ -1,6 +1,7 @@
 // src/hooks/useHeliusTx.ts
 import { useQuery } from "@tanstack/react-query";
 import { getEnhancedTx, getHeliusTransactions } from "../services/heliusClient";
+import { fetchTokenPriceData } from "../services/handleTokenPrice";
 
 export const useHeliusTx = (wallet: string, limit = 10) => {
   return useQuery({
@@ -14,7 +15,7 @@ export const useHeliusTx = (wallet: string, limit = 10) => {
 
 export const useHeliusDetailedTx = (signature: string) => {
   return useQuery({
-    queryKey: ["heliusTx", signature],
+    queryKey: ["heliusDetailedTx", signature],
     queryFn: () => getEnhancedTx(signature),
 
     enabled: !!signature,
