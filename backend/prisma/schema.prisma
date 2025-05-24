@@ -31,14 +31,13 @@ model Transaction {
 }
 
 model TokenTransfer {
-  id           String      @id @default(uuid())
-  txSignature  String
-  wallet       String
-  mint         String
-  symbol       String
-  sent         Float
-  received     Float
-  priceAtTx    Float
-  currentPrice Float
-  transaction  Transaction @relation(fields: [txSignature], references: [signature])
+  id          String      @id @default(uuid())
+  txSignature String
+  wallet      String
+  mint        String
+  symbol      String
+  sent        Float
+  received    Float
+  logo        String
+  transaction Transaction @relation(fields: [txSignature], references: [signature])
 }
