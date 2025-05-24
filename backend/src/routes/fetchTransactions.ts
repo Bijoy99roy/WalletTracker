@@ -3,6 +3,7 @@ import { solanaAddressSchema } from "../schema/transaction.schema";
 import { fetchTransactionFromDB } from "../service/fetchTransactionFromDB";
 import { fetchOlderFromHelius } from "../service/fetchOlderFromHelius";
 import { syncNewTransactionsNow } from "../service/syncNewTransactions";
+import { prisma } from "../db/connection";
 
 export const fetchTransactionRouter = express.Router();
 
@@ -34,6 +35,19 @@ fetchTransactionRouter.post("/get", async (req, res) => {
       return;
     }
 
+    const hasAllTransactions = await prisma.wallet.findFirst({
+      where: {
+        wallet: walletAddress,
+      },
+      select: {
+        hasAllTransactions: true,
+      },
+    });
+
+    if (hasAllTransactions) {
+      res.status(200).json({ source: "helius", data: [] });
+      return;
+    }
     const inserted = await fetchOlderFromHelius(walletAddress);
     const updatedTxs = await fetchTransactionFromDB(walletAddress, page, limit);
 

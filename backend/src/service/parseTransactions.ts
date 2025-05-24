@@ -40,15 +40,13 @@ export async function parseTx(tx: any, wallet: string) {
   }
 
   for (const [mint, { sent, received }] of tokens) {
-    const price = await getCurrentPrice(mint);
-    const symbol = await getTokenSymbol(mint);
+    const tokenInfo = await getTokenSymbol(mint);
     transfers.push({
       mint,
-      symbol: symbol,
+      symbol: tokenInfo.symbol,
+      logoUrl: tokenInfo.logoUrl,
       sent,
       received,
-      priceAtTx: price,
-      currentPrice: price,
     });
   }
 
