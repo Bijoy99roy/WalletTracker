@@ -31,7 +31,7 @@ export function Home() {
         />
         <div className="absolute w-full">
 
-            <header className="relative flex items-center justify-between p-6 backdrop-blur-md border-b">
+            <header className="relative flex items-center justify-between p-7.5 backdrop-blur-md border-b">
                 <SidebarTrigger className="text-foreground hover:bg-accent" />
                 <div className="text-sm text-muted-foreground">
                     Track any Solana wallet address
