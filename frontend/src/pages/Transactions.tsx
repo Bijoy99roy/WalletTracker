@@ -1,9 +1,12 @@
+import { TransactionDetailsDialogBox } from "@/components/TransactionDetailsDialogBox";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeftRight, CheckCheck, Copy, ExternalLink, MoveDownLeft, MoveUpRight, Search, Wallet } from "lucide-react";
+import { transactionIcons, type TxType } from "@/constants/transactionsIcons";
+import { copyToClipboard, openSolscan } from "@/utils/common";
+import { CheckCheck, Copy, ExternalLink, Search, Wallet } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom"
 
@@ -15,12 +18,10 @@ export function Transactions() {
     const [clickCopy, setClickCopy] = useState(false)
 
 
-    function copyToClipboard(text: string) {
-        navigator.clipboard.writeText(text)
 
-    }
 
     function handleTransactionClick(transaction: any) {
+        console.log(transaction)
         setSelectedTransaction(transaction)
         setDialogueOpen(true)
     }
@@ -28,9 +29,6 @@ export function Transactions() {
         return ""
     }
 
-    function openSolscan(signature: string) {
-        window.open(`https://solscan.io/tx/${signature}`, '_blank', 'noopener,noreferrer')
-    }
 
     useEffect(() => {
         let timer: NodeJS.Timeout;
@@ -41,14 +39,6 @@ export function Transactions() {
         }
         return () => clearTimeout(timer);
     }, [clickCopy]);
-
-
-    type TxType = "transfer" | "receive" | "swap";
-    const transactionIcons = {
-        "transfer": <MoveUpRight className="w-4 h-4" />,
-        "receive": <MoveDownLeft />,
-        "swap": <ArrowLeftRight />
-    }
     // const transactions = []
     const transactions = [
         {
@@ -122,7 +112,8 @@ export function Transactions() {
                             <TableBody>
                                 {transactions.map((tx) => (
                                     <TableRow key={tx.id}
-                                        className="hover:bg-accent/20 cursor-pointer  text-left" >
+                                        className="hover:bg-accent/20 cursor-pointer  text-left"
+                                        onClick={() => handleTransactionClick(tx)}>
                                         <TableCell >
                                             {tx.timestamp}
                                         </TableCell>
@@ -138,7 +129,7 @@ export function Transactions() {
                                             {formatAsset(tx)}
                                         </TableCell>
                                         <TableCell>
-                                            {tx.currentPrice}
+                                            ${tx.currentPrice}
                                         </TableCell>
                                         <TableCell>
                                             <span className="text-muted-foreground font-mono text-sm">
@@ -176,5 +167,11 @@ export function Transactions() {
                 </CardContent>
             </Card>
         </div>
+
+        {selectedTransaction && <TransactionDetailsDialogBox
+            transaction={selectedTransaction}
+            open={dialogueOpen}
+            onOpenChange={setDialogueOpen}
+        />}
     </div >
 }
