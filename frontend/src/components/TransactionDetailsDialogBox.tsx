@@ -1,8 +1,12 @@
+// Having rate limit issues with free apis suspending this component for now.
+
 import { transactionIcons, type TxType } from "@/constants/transactionsIcons";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Copy, ExternalLink } from "lucide-react";
 import { copyToClipboard, openSolscan } from "@/utils/common";
+import { getCurrentPrice } from "@/services/fetchPrices";
+import { useEffect, useState } from "react";
 
 
 
@@ -21,6 +25,13 @@ interface TransactionDetailsDialogProp {
 
 export function TransactionDetailsDialogBox({ transaction, open, onOpenChange }: TransactionDetailsDialogProp) {
     console.log(transaction)
+    const [currentPrice, setCurrentPrice] = useState(0);
+    useEffect(() => {
+        async function getPrice() {
+            await getCurrentPrice(transaction.mint)
+        }
+        getPrice()
+    }, [currentPrice])
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
 
@@ -28,7 +39,7 @@ export function TransactionDetailsDialogBox({ transaction, open, onOpenChange }:
 
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-3">
-                        {transactionIcons[transaction.type as TxType]}
+                        {transactionIcons[transaction.type.toLowerCase() as TxType]}
                         <span>{transaction.type} Transaction</span>
                     </DialogTitle>
                 </DialogHeader>
@@ -40,7 +51,7 @@ export function TransactionDetailsDialogBox({ transaction, open, onOpenChange }:
                         <h3 className=" font-medium text-muted-foreground mb-2">Asset</h3>
                         <div></div>
                         <p className="text-muted-foreground mt-1">
-                            Current Price: {transaction.currentPrice}
+                            Current Price: {currentPrice}
                         </p>
                     </div>
                     {/* Trnsaction details */}
@@ -66,10 +77,10 @@ export function TransactionDetailsDialogBox({ transaction, open, onOpenChange }:
                                     To
                                 </h3>
                                 <div className="flex items-center gap-2">
-                                    <span className="font-mono text-sm">{transaction.to}</span>
+                                    <span className="font-mono text-sm">{transaction.wallet}</span>
                                     <Button
                                         size="sm"
-                                        onClick={() => copyToClipboard(transaction.from)}
+                                        onClick={() => copyToClipboard(transaction.wallet)}
                                         className="text-muted-foreground bg-secondary hover:text-foreground hover:bg-accent">
                                         <Copy />
                                     </Button>
@@ -84,8 +95,8 @@ export function TransactionDetailsDialogBox({ transaction, open, onOpenChange }:
                             </div>
                             <div>
                                 <h3 className="text-muted-foreground mb-1 font-medium">Transaction Fee</h3>
-                                <p className="font-medium">{transaction.fee} SOL</p>
-                                <p className="text-muted-foreground text-sm">≈ $23</p>
+                                <p className="font-medium">{transaction.fees} SOL</p>
+
                             </div>
                         </div>
                     </div>

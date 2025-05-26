@@ -21,7 +21,7 @@ export async function getTokenSymbol(mint: string): Promise<TokenInfo> {
   const data = await response.json();
   const tokenInfo = {
     symbol: data.result.content.metadata.symbol || mint.slice(0, 6),
-    logoUrl: data.result.content.links || "",
+    logoUrl: data.result.content.links.image || "",
   };
   return tokenInfo;
 }

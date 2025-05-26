@@ -27,6 +27,7 @@ model Transaction {
   type           String
   solSent        Float
   solReceived    Float
+  fees           Int
   tokenTransfers TokenTransfer[]
 }
 
@@ -38,6 +39,6 @@ model TokenTransfer {
   symbol      String
   sent        Float
   received    Float
-  logo        String
+  logoUrl     String
   transaction Transaction @relation(fields: [txSignature], references: [signature])
 }

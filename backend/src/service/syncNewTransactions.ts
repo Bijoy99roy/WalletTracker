@@ -13,6 +13,7 @@ export async function syncNewTransactionsNow(wallet: string) {
   const txs = await res.json();
 
   for (const tx of txs) {
+    console.log(tx);
     if (tx.signature === latest?.signature) break;
 
     const parsed = await parseTx(tx, wallet);
@@ -23,6 +24,7 @@ export async function syncNewTransactionsNow(wallet: string) {
         id: parsed.signature,
         signature: parsed.signature,
         wallet,
+        fees: tx.fee,
         timestamp: parsed.timestamp,
         type: parsed.type,
         solSent: parsed.solSent,

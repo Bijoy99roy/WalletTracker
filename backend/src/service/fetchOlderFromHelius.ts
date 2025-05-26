@@ -1,4 +1,5 @@
 import { prisma } from "../db/connection";
+import { TokenTransfer } from "../model/transactions";
 import { parseTx } from "./parseTransactions";
 
 export async function fetchOlderFromHelius(wallet: string): Promise<number> {
@@ -43,6 +44,7 @@ export async function fetchOlderFromHelius(wallet: string): Promise<number> {
         id: parsed.signature,
         signature: parsed.signature,
         wallet,
+        fees: tx.fee,
         timestamp: parsed.timestamp,
         type: parsed.type,
         solSent: parsed.solSent,

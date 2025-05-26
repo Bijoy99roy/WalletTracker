@@ -1,12 +1,16 @@
+import { FormatAsset } from "@/components/FormatAsset";
+import { Loader } from "@/components/Loader";
 import { TransactionDetailsDialogBox } from "@/components/TransactionDetailsDialogBox";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { transactionIcons, type TxType } from "@/constants/transactionsIcons";
-import { copyToClipboard, openSolscan } from "@/utils/common";
-import { CheckCheck, Copy, ExternalLink, Search, Wallet } from "lucide-react";
+import { transactionColor, transactionIcons, type TxType } from "@/constants/transactionsIcons";
+import { useTransactions } from "@/hooks/useTransactions";
+import { getCurrentPrice } from "@/services/fetchPrices";
+import { copyToClipboard, formatUnixTimestamp, openSolscan } from "@/utils/common";
+import { CheckCheck, ChevronRight, Copy, ExternalLink, Search, Wallet } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom"
 
@@ -16,7 +20,7 @@ export function Transactions() {
     const [selectedTransaction, setSelectedTransaction] = useState(null)
     const [dialogueOpen, setDialogueOpen] = useState(false)
     const [clickCopy, setClickCopy] = useState(false)
-
+    const [prices, setPrices] = useState<{ [mint: string]: number }>({});
 
 
 
@@ -25,9 +29,7 @@ export function Transactions() {
         setSelectedTransaction(transaction)
         setDialogueOpen(true)
     }
-    function formatAsset(transaction: any) {
-        return ""
-    }
+
 
 
     useEffect(() => {
@@ -39,21 +41,10 @@ export function Transactions() {
         }
         return () => clearTimeout(timer);
     }, [clickCopy]);
-    // const transactions = []
-    const transactions = [
-        {
-            id: 1,
-            signature: "5VfydY7DzN9eM3sKcH8yJ2mF7qW9rP3xL4nB6kA1sR8tE9mQ2dF",
-            type: "transfer",
-            amount: 2.5,
-            token: "SOL",
-            timestamp: "2024-01-15 14:30:25",
-            status: "confirmed",
-            from: "A1B2...XY9Z",
-            to: "C3D4...UV8W",
-            fee: 0.000005,
-            currentPrice: 98.45
-        }]
+
+
+    const { data: transactions, isLoading, error } = useTransactions(walletAddress, 1, 10);
+
 
     return <div className="min-h-screen relative w-full">
         <div className="absolute w-full space-y-5 px-6">
@@ -91,87 +82,94 @@ export function Transactions() {
                     <CardTitle>Transactions</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    {transactions.length === 0 ? (
-                        <div className="flex flex-col justify-center items-center">
-                            <Wallet className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                            <h3 className="text-xl font-semibold mb-2">No Transactions Found</h3>
-                            <p className="text-muted-foreground">This wallet doesn't have any transaction history yet.</p>
-                        </div>
-                    ) : (
-                        <Table>
-                            <TableHeader>
-                                <TableRow className="hover:bg-transparent">
-                                    <TableHead className="text-muted-foreground">Datetime</TableHead>
-                                    <TableHead className="text-muted-foreground">Type</TableHead>
-                                    <TableHead className="text-muted-foreground">Asset (s)</TableHead>
-                                    <TableHead className="text-muted-foreground">Current Price</TableHead>
-                                    <TableHead className="text-muted-foreground">Signature</TableHead>
-                                    <TableHead className="text-muted-foreground">Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {transactions.map((tx) => (
-                                    <TableRow key={tx.id}
-                                        className="hover:bg-accent/20 cursor-pointer  text-left"
-                                        onClick={() => handleTransactionClick(tx)}>
-                                        <TableCell >
-                                            {tx.timestamp}
-                                        </TableCell>
-                                        <TableCell className="flex items-center">
-                                            <div className="flex items-center gap-2">
-                                                <div className="rounded-full bg-red-400 w-6 h-6 flex items-center justify-center">
-                                                    {transactionIcons[tx.type as TxType]}
-                                                </div>
-                                                <span>{tx.type}</span>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            {formatAsset(tx)}
-                                        </TableCell>
-                                        <TableCell>
-                                            ${tx.currentPrice}
-                                        </TableCell>
-                                        <TableCell>
-                                            <span className="text-muted-foreground font-mono text-sm">
-                                                {tx.signature.slice(0, 8)}...{tx.signature.slice(-8)}
-                                            </span>
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className="flex items-center gap-2">
-                                                <Button className="text-muted-foreground hover:text-foreground bg-secondary hover:bg-accent"
-                                                    size="sm"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation()
-                                                        copyToClipboard(tx.signature)
-                                                        setClickCopy(true)
+                    {isLoading ? <Loader />
+                        :
+                        (
+                            transactions.data.length === 0 ? (
+                                <div className="flex flex-col justify-center items-center">
+                                    <Wallet className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                                    <h3 className="text-xl font-semibold mb-2">No Transactions Found</h3>
+                                    <p className="text-muted-foreground">This wallet doesn't have any transaction history yet.</p>
+                                </div>
+                            ) : (
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="hover:bg-transparent">
+                                            <TableHead className="text-muted-foreground">Datetime</TableHead>
+                                            <TableHead className="text-muted-foreground">Type</TableHead>
+                                            <TableHead className="text-muted-foreground text-center">Asset (s)</TableHead>
+                                            <TableHead className="text-muted-foreground">Fees</TableHead>
+                                            <TableHead className="text-muted-foreground">Signature</TableHead>
+                                            <TableHead className="text-muted-foreground">Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {transactions.data.map((tx: any) => (
+                                            <TableRow key={tx.id}
+                                                className="hover:bg-accent/20 cursor-pointer  text-left"
+                                                onClick={() => handleTransactionClick(tx)}>
+                                                <TableCell >
+                                                    {formatUnixTimestamp(tx.timestamp)}
+                                                </TableCell>
+                                                <TableCell className="flex items-center">
+                                                    <div className="flex items-center gap-2 mt-2">
+                                                        <div className={`rounded-full ${transactionColor[tx.type.toLowerCase() as TxType]} w-6 h-6 flex items-center justify-center`}>
+                                                            {transactionIcons[tx.type.toLowerCase() as TxType]}
+                                                        </div>
+                                                        <span>{tx.type}</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    {FormatAsset(tx)}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {tx.fees / 1e9} SOL
+                                                </TableCell>
+                                                <TableCell>
+                                                    <span className="text-muted-foreground font-mono text-sm">
+                                                        {tx.signature.slice(0, 8)}...{tx.signature.slice(-8)}
+                                                    </span>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex items-center gap-2">
+                                                        <Button className="text-muted-foreground hover:text-foreground bg-secondary hover:bg-accent"
+                                                            size="sm"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation()
+                                                                copyToClipboard(tx.signature)
+                                                                setClickCopy(true)
 
-                                                    }}>
-                                                    {clickCopy ? <CheckCheck /> : <Copy />}
+                                                            }}>
+                                                            {clickCopy ? <CheckCheck /> : <Copy />}
 
-                                                </Button>
-                                                <Button className="text-muted-foreground hover:text-foreground bg-secondary hover:bg-accent"
-                                                    size="sm"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation()
-                                                        openSolscan(tx.signature)
-                                                    }}>
-                                                    <ExternalLink className="w-4 h-4" />
-                                                </Button>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    )}
+                                                        </Button>
+                                                        <Button className="text-muted-foreground hover:text-foreground bg-secondary hover:bg-accent"
+                                                            size="sm"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation()
+                                                                openSolscan(tx.signature)
+                                                            }}>
+                                                            <ExternalLink className="w-4 h-4" />
+                                                        </Button>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            )
+                        )
+                    }
                 </CardContent>
             </Card>
         </div>
 
-        {selectedTransaction && <TransactionDetailsDialogBox
-            transaction={selectedTransaction}
-            open={dialogueOpen}
-            onOpenChange={setDialogueOpen}
-        />}
+        {/* {
+            selectedTransaction && <TransactionDetailsDialogBox
+                transaction={selectedTransaction}
+                open={dialogueOpen}
+                onOpenChange={setDialogueOpen}
+            />
+        } */}
     </div >
 }
