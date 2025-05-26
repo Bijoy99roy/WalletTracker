@@ -97,7 +97,7 @@ export function Transactions() {
                                         <TableRow className="hover:bg-transparent">
                                             <TableHead className="text-muted-foreground">Datetime</TableHead>
                                             <TableHead className="text-muted-foreground">Type</TableHead>
-                                            <TableHead className="text-muted-foreground text-center">Asset (s)</TableHead>
+                                            <TableHead className="text-muted-foreground">Asset (s)</TableHead>
                                             <TableHead className="text-muted-foreground">Fees</TableHead>
                                             <TableHead className="text-muted-foreground">Signature</TableHead>
                                             <TableHead className="text-muted-foreground">Actions</TableHead>
