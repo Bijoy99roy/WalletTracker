@@ -1,12 +1,12 @@
-// Having rate limit issues with free apis suspending this component for now.
 
 import { transactionIcons, type TxType } from "@/constants/transactionsIcons";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Copy, ExternalLink } from "lucide-react";
-import { copyToClipboard, openSolscan } from "@/utils/common";
+import { copyToClipboard, formatUnixTimestamp, openSolscan } from "@/utils/common";
 import { getCurrentPrice } from "@/services/fetchPrices";
 import { useEffect, useState } from "react";
+import { FormatAsset } from "./FormatAsset";
 
 
 
@@ -49,49 +49,21 @@ export function TransactionDetailsDialogBox({ transaction, open, onOpenChange }:
 
                     <div className="rounded-lg p-4">
                         <h3 className=" font-medium text-muted-foreground mb-2">Asset</h3>
-                        <div></div>
-                        <p className="text-muted-foreground mt-1">
+                        <div>
+                            {FormatAsset(transaction)}
+                        </div>
+                        {/* <p className="text-muted-foreground mt-1">
                             Current Price: {currentPrice}
-                        </p>
+                        </p> */}
                     </div>
                     {/* Trnsaction details */}
                     <div className="p-4 grid grid-cols-1 md:grid-cols-2 space-y-2">
-                        <div className="space-y-4">
-                            <div>
-                                <h3 className="font-medium text-muted-foreground mb-1">
-                                    From
-                                </h3>
-                                <div className="flex items-center gap-2">
-                                    <span className="font-mono text-sm">{transaction.from}</span>
-                                    <Button
-                                        size="sm"
-                                        onClick={() => copyToClipboard(transaction.from)}
-                                        className="text-muted-foreground bg-secondary hover:text-foreground hover:bg-accent">
-                                        <Copy />
-                                    </Button>
-                                </div>
-                            </div>
 
-                            <div>
-                                <h3 className="font-medium text-muted-foreground mb-1">
-                                    To
-                                </h3>
-                                <div className="flex items-center gap-2">
-                                    <span className="font-mono text-sm">{transaction.wallet}</span>
-                                    <Button
-                                        size="sm"
-                                        onClick={() => copyToClipboard(transaction.wallet)}
-                                        className="text-muted-foreground bg-secondary hover:text-foreground hover:bg-accent">
-                                        <Copy />
-                                    </Button>
-                                </div>
-                            </div>
-                        </div>
 
                         <div className="space-y-4">
                             <div>
                                 <h3 className="font-medium text-muted-foreground mb-1">Date & Time</h3>
-                                <p className="">{transaction.timestamp}</p>
+                                <p className="">{formatUnixTimestamp(transaction.timestamp)}</p>
                             </div>
                             <div>
                                 <h3 className="text-muted-foreground mb-1 font-medium">Transaction Fee</h3>

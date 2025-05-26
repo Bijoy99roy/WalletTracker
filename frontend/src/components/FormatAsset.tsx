@@ -2,7 +2,7 @@ import { ChevronRight } from "lucide-react";
 
 export function FormatAsset(transaction: any) {
     const logo = (url: string) => (
-        <img src={url} className="rounded-full w-10 h-10 mr-2" />
+        <img src={url} className="rounded-full w-8 h-8 sm:w-10 sm:h-10 mr-2" />
     );
 
     const tokenDisplay = (logoUrl: string, symbol: string, amount: number) => (
@@ -36,10 +36,10 @@ export function FormatAsset(transaction: any) {
     const send = receive === a ? b : a;
 
     return (
-        <div className="grid grid-cols-3 items-center w-full max-w-[700px]">
+        <div className="flex sm:grid sm:grid-cols-3 items-center w-full max-w-[700px]">
             <div className="flex items-center">{tokenDisplay(send.logoUrl, send.symbol, send.sent)}</div>
             <div className="flex justify-center"><ChevronRight /></div>
-            <div className="flex items-center justify-start">{tokenDisplay(receive.logoUrl, receive.symbol, receive.received)}</div>
+            <div className="flex items-center justify-start break-all">{tokenDisplay(receive.logoUrl, receive.symbol, receive.received)}</div>
         </div>
     );
 }

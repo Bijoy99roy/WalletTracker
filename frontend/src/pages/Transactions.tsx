@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { transactionColor, transactionIcons, type TxType } from "@/constants/transactionsIcons";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useTransactions } from "@/hooks/useTransactions";
 import { getCurrentPrice } from "@/services/fetchPrices";
 import { copyToClipboard, formatUnixTimestamp, openSolscan } from "@/utils/common";
@@ -20,8 +21,9 @@ export function Transactions() {
     const [selectedTransaction, setSelectedTransaction] = useState(null)
     const [dialogueOpen, setDialogueOpen] = useState(false)
     const [clickCopy, setClickCopy] = useState(false)
-    const [prices, setPrices] = useState<{ [mint: string]: number }>({});
 
+
+    const isMobile = useIsMobile()
 
 
     function handleTransactionClick(transaction: any) {
@@ -163,13 +165,13 @@ export function Transactions() {
                 </CardContent>
             </Card>
         </div>
-
-        {/* {
-            selectedTransaction && <TransactionDetailsDialogBox
+        {/* Only opens dialg if in mobile view */}
+        {
+            (selectedTransaction && isMobile) && <TransactionDetailsDialogBox
                 transaction={selectedTransaction}
                 open={dialogueOpen}
                 onOpenChange={setDialogueOpen}
             />
-        } */}
+        }
     </div >
 }
