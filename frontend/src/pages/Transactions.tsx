@@ -1,5 +1,6 @@
 import { FormatAsset } from "@/components/FormatAsset";
 import { Loader } from "@/components/Loader";
+import { TableContent } from "@/components/TableContent";
 import { TransactionDetailsDialogBox } from "@/components/TransactionDetailsDialogBox";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,12 +9,13 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { transactionColor, transactionIcons, type TxType } from "@/constants/transactionsIcons";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useTransactions } from "@/hooks/useTransactions";
+import { useInfiniteTransactions, useTransactions } from "@/hooks/useTransactions";
 import { getCurrentPrice } from "@/services/fetchPrices";
 import { copyToClipboard, formatUnixTimestamp, openSolscan } from "@/utils/common";
 import { CheckCheck, ChevronRight, Copy, ExternalLink, Search, Wallet } from "lucide-react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom"
+import { useInView } from "react-intersection-observer";
 
 export function Transactions() {
     const [searchParams] = useSearchParams();
@@ -22,7 +24,7 @@ export function Transactions() {
     const [dialogueOpen, setDialogueOpen] = useState(false)
     const [clickCopy, setClickCopy] = useState(false)
 
-
+    const { ref, inView } = useInView()
     const isMobile = useIsMobile()
 
 
@@ -45,8 +47,26 @@ export function Transactions() {
     }, [clickCopy]);
 
 
-    const { data: transactions, isLoading, error } = useTransactions(walletAddress, 1, 10);
+    // const { data: transactions, isLoading, error } = useTransactions(walletAddress, 1, 10);
+    const {
+        data: transactions,
+        error,
+        fetchNextPage,
+        hasNextPage,
+        isFetching,
+        isFetchingNextPage,
+        status,
+    } = useInfiniteTransactions(walletAddress, 20);
+    useEffect(() => {
+        if (inView) {
+            console.log("Fetching")
+            fetchNextPage();
+            console.log("Fetched")
+        }
+    }, [fetchNextPage, inView])
 
+    const allTransactions = transactions?.pages.flatMap(page => page) || [];
+    const hasTransactions = allTransactions.length > 0;
 
     return <div className="min-h-screen relative w-full">
         <div className="absolute w-full space-y-5 px-6">
@@ -84,10 +104,10 @@ export function Transactions() {
                     <CardTitle>Transactions</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    {isLoading ? <Loader />
+                    {status === 'pending' ? <Loader />
                         :
                         (
-                            transactions.data.length === 0 ? (
+                            !hasTransactions ? (
                                 <div className="flex flex-col justify-center items-center">
                                     <Wallet className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
                                     <h3 className="text-xl font-semibold mb-2">No Transactions Found</h3>
@@ -106,63 +126,33 @@ export function Transactions() {
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {transactions.data.map((tx: any) => (
-                                            <TableRow key={tx.id}
-                                                className="hover:bg-accent/20 cursor-pointer  text-left"
-                                                onClick={() => handleTransactionClick(tx)}>
-                                                <TableCell >
-                                                    {formatUnixTimestamp(tx.timestamp)}
-                                                </TableCell>
-                                                <TableCell className="flex items-center">
-                                                    <div className="flex items-center gap-2 mt-2">
-                                                        <div className={`rounded-full ${transactionColor[tx.type.toLowerCase() as TxType]} w-6 h-6 flex items-center justify-center`}>
-                                                            {transactionIcons[tx.type.toLowerCase() as TxType]}
-                                                        </div>
-                                                        <span>{tx.type}</span>
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell>
-                                                    {FormatAsset(tx)}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {tx.fees / 1e9} SOL
-                                                </TableCell>
-                                                <TableCell>
-                                                    <span className="text-muted-foreground font-mono text-sm">
-                                                        {tx.signature.slice(0, 8)}...{tx.signature.slice(-8)}
-                                                    </span>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <div className="flex items-center gap-2">
-                                                        <Button className="text-muted-foreground hover:text-foreground bg-secondary hover:bg-accent"
-                                                            size="sm"
-                                                            onClick={(e) => {
-                                                                e.stopPropagation()
-                                                                copyToClipboard(tx.signature)
-                                                                setClickCopy(true)
+                                        {transactions?.pages.map((transaction, i) => (
 
-                                                            }}>
-                                                            {clickCopy ? <CheckCheck /> : <Copy />}
 
-                                                        </Button>
-                                                        <Button className="text-muted-foreground hover:text-foreground bg-secondary hover:bg-accent"
-                                                            size="sm"
-                                                            onClick={(e) => {
-                                                                e.stopPropagation()
-                                                                openSolscan(tx.signature)
-                                                            }}>
-                                                            <ExternalLink className="w-4 h-4" />
-                                                        </Button>
-                                                    </div>
+                                            <TableContent key={i} transactions={transaction} handleTransactionClick={handleTransactionClick} setClickCopy={setClickCopy} clickCopy={clickCopy} />
+
+
+                                        ))
+                                        }
+
+                                        {hasNextPage && (
+                                            <TableRow ref={ref}>
+                                                <TableCell colSpan={5} className="text-center">
+                                                    {isFetchingNextPage ? "Loading more..." : "Scroll to load more"}
                                                 </TableCell>
                                             </TableRow>
-                                        ))}
+                                        )}
+
                                     </TableBody>
                                 </Table>
+
+
                             )
                         )
+
                     }
                 </CardContent>
+
             </Card>
         </div>
         {/* Only opens dialg if in mobile view */}
