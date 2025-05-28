@@ -7,6 +7,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { ThemeProvider } from './provider/theme-provider';
 import { Transactions } from './pages/Transactions';
 import { AppSidebar } from './components/AppSidebar';
+import { Analytics } from './pages/Analytics';
 
 const queryClient = new QueryClient()
 
@@ -22,6 +23,7 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/transactions" element={<Transactions />} />
+          <Route path='/analysis' element={<Analytics />} />
         </Routes>
       </main>
     </div >
