@@ -16,6 +16,7 @@ import { CheckCheck, ChevronRight, Copy, ExternalLink, Search, Wallet } from "lu
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom"
 import { useInView } from "react-intersection-observer";
+import { Footer } from "@/components/Footer";
 
 export function Transactions() {
     const [searchParams] = useSearchParams();
@@ -68,8 +69,8 @@ export function Transactions() {
     const allTransactions = transactions?.pages.flatMap(page => page) || [];
     const hasTransactions = allTransactions.length > 0;
 
-    return <div className="min-h-screen relative w-full">
-        <div className="absolute w-full space-y-5 px-6">
+    return <div className=" relative w-full">
+        <div className=" w-full space-y-5 px-6">
             <header className="flex items-center gap-4 backdrop-blur-md border-b p-7.5">
                 <SidebarTrigger className="hover:bg-accent" />
                 <h1 className="text-2xl font-bold">Transaction History</h1>
@@ -163,5 +164,6 @@ export function Transactions() {
                 onOpenChange={setDialogueOpen}
             />
         }
+        <Footer />
     </div >
 }

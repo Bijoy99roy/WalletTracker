@@ -9,13 +9,14 @@ import { Transactions } from './pages/Transactions';
 import { AppSidebar } from './components/AppSidebar';
 import { Analytics } from './pages/Analytics';
 
+
 const queryClient = new QueryClient()
 
 function AppContent() {
   const location = useLocation()
   const showSidebar = location.pathname !== '/';
   return (
-    <div className="min-h-screen flex w-full bg-background" >
+    <div className="max-h-screen flex w-full bg-background" >
       {
         showSidebar && <AppSidebar />
       }
@@ -26,6 +27,7 @@ function AppContent() {
           <Route path='/analysis' element={<Analytics />} />
         </Routes>
       </main>
+
     </div >
   )
 }

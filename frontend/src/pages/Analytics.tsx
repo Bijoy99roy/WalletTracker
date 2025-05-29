@@ -1,3 +1,4 @@
+import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -17,8 +18,8 @@ export function Analytics() {
     const totalValue = portfolioData.reduce((sum, token) => sum + token.value, 0);
 
     return (
-        <div className="min-h-screen relative w-full">
-            <div className="absolute w-full px-6 space-y-5">
+        <div className="relative w-full">
+            <div className=" w-full px-6 space-y-5">
                 <header className="relative flex items-center backdrop-blur-md p-7.5 border-b">
                     <div className="flex items-center gap-4">
                         <SidebarTrigger className="text-foreground hover:bg-accent" />
@@ -88,6 +89,8 @@ export function Analytics() {
                 </div>
 
             </div>
+            <Footer />
         </div>
+
     )
 }
