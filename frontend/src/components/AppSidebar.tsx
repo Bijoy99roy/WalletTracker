@@ -48,7 +48,15 @@ export function AppSidebar() {
                                                 ? 'bg-primary border  text-primary-foreground'
                                                 : 'text-muted-foreground hover:text-foreground'
                                                 }`}>
-                                            <button onClick={() => navigate(item.url)}
+                                            <button onClick={() => {
+                                                const walletAddress = localStorage.getItem("walletAddress_tracker");
+                                                if (walletAddress) {
+                                                    navigate(`${item.url}?wallet=${encodeURIComponent(walletAddress.trim())}`)
+                                                }
+
+
+
+                                            }}
                                                 className="flex items-center gap-3 p-3 text-left w-full">
                                                 <item.icon className="w-5 h-5" />
                                                 <span className="font-medium">{item.title}</span>

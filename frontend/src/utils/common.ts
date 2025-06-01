@@ -20,3 +20,9 @@ export function formatUnixTimestamp(unix: number) {
 
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
+
+export function getEnvironmentBaseApi() {
+  return import.meta.env.ENVIRONMENT === "PROD"
+    ? "/api"
+    : "http://localhost:3000";
+}

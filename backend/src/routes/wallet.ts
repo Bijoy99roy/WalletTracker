@@ -8,7 +8,11 @@ import { prisma } from "../db/connection";
 import express from "express";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { getTokenSymbol } from "../service/resolveTokenInfo";
-import { getCurrentPrice, getCurrentPriceInfo } from "../service/fetchPrices";
+import {
+  getCurrentPrice,
+  getCurrentPriceInfo,
+  getHistoricPrice,
+} from "../service/fetchPrices";
 import Bottleneck from "bottleneck";
 import { walletAddressSchema } from "../schema/wallet.schema";
 import { SOLANA_TOKEN_ADDRESS } from "../constants";
@@ -18,6 +22,7 @@ const limiter = new Bottleneck({
   minTime: 1500,
 });
 const limitedFetchPrice = limiter.wrap(getCurrentPriceInfo);
+const limitedFetchHistoricalPrice = limiter.wrap(getHistoricPrice);
 interface Token {
   symbol?: string;
   logoUrl?: string;
@@ -64,8 +69,13 @@ walletRouter.post("/getTokens", async (req, res) => {
       const uiAmount = parseFloat(rawAmount) / Math.pow(10, decimals);
       if (uiAmount > 0) {
         let token: Token = {};
+        // const historicalPrice = await limitedFetchHistoricalPrice(mint);
         const currentTokenPrice = await limitedFetchPrice(mint);
-        if (currentTokenPrice?.priceChange24h) {
+        console.log(currentTokenPrice);
+        if (
+          currentTokenPrice?.priceChange24h &&
+          currentTokenPrice.value > 0.0001
+        ) {
           const tokenInfo = await getTokenSymbol(mint);
           token = { ...tokenInfo };
           token["price"] = currentTokenPrice?.value * uiAmount;

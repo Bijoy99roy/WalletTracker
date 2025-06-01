@@ -15,6 +15,7 @@ export function Home() {
 
     function handleSearch() {
         if (walletAddress.trim()) {
+            localStorage.setItem("walletAddress_tracker", walletAddress.trim());
             navigate(`/transactions?wallet=${encodeURIComponent(walletAddress.trim())}`)
         }
     }

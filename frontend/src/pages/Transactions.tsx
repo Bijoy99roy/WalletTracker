@@ -19,7 +19,7 @@ import { useInView } from "react-intersection-observer";
 import { Footer } from "@/components/Footer";
 
 export function Transactions() {
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
     const [walletAddress, setWalletAddress] = useState(searchParams.get('wallet') || '')
     const [selectedTransaction, setSelectedTransaction] = useState(null)
     const [dialogueOpen, setDialogueOpen] = useState(false)
@@ -28,6 +28,10 @@ export function Transactions() {
     const { ref, inView } = useInView()
     const isMobile = useIsMobile()
 
+    const handleSearch = (walletAddress: string) => {
+        searchParams.set("wallet", walletAddress);
+        setSearchParams(searchParams);
+    };
 
     function handleTransactionClick(transaction: any) {
         console.log(transaction)
@@ -88,7 +92,11 @@ export function Transactions() {
                                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                                 <Input type="text"
                                     value={walletAddress}
-                                    onChange={(e) => setWalletAddress(e.target.value)}
+                                    onChange={(e) => {
+                                        setWalletAddress(e.target.value)
+                                        localStorage.setItem("walletAddress_tracker", e.target.value.trim());
+                                        handleSearch(e.target.value.trim())
+                                    }}
                                     placeholder="Enter Wallet Address..."
                                     className="pl-10 placeholder-muted-foreground focus-visible:border-primary focus-visible:ring-primary" />
                             </div>
