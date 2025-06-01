@@ -1,5 +1,5 @@
-import { CheckCheck, Copy, ExternalLink, Wallet } from "lucide-react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table"
+import { CheckCheck, Copy, ExternalLink } from "lucide-react"
+import { TableCell, TableRow } from "./ui/table"
 import { copyToClipboard, formatUnixTimestamp, openSolscan } from "@/utils/common"
 import { transactionColor, transactionIcons, type TxType } from "@/constants/transactionsIcons"
 import { FormatAsset } from "./FormatAsset"

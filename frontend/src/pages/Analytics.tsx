@@ -5,7 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useTokenInfo } from "@/hooks/useTokenInfo";
 import { DollarSign, PieChart, Wallet } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 
 
@@ -22,8 +22,8 @@ export interface TokenInfo {
 
 export function Analytics() {
     const [searchParams] = useSearchParams();
-    const [walletAddress, setWalletAddress] = useState(searchParams.get('wallet') || '')
-    const { data: tokenInfo, isLoading, error } = useTokenInfo(walletAddress);
+    const walletAddress = searchParams.get('wallet') || ''
+    const { data: tokenInfo, isLoading } = useTokenInfo(walletAddress);
 
     const { totalBalance, tokenList } = useMemo(() => {
         let balance = 0;

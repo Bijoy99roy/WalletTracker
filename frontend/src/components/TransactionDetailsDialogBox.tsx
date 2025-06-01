@@ -4,18 +4,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Copy, ExternalLink } from "lucide-react";
 import { copyToClipboard, formatUnixTimestamp, openSolscan } from "@/utils/common";
-import { getCurrentPrice } from "@/services/fetchPrices";
-import { useEffect, useState } from "react";
+// import { getCurrentPrice } from "@/services/fetchPrices";
+// import { useEffect, useState } from "react";
 import { FormatAsset } from "./FormatAsset";
 
-
-
-interface Transaction {
-    id: number;
-    signature: string;
-    type: string;
-
-}
 
 interface TransactionDetailsDialogProp {
     transaction: any;
@@ -25,13 +17,13 @@ interface TransactionDetailsDialogProp {
 
 export function TransactionDetailsDialogBox({ transaction, open, onOpenChange }: TransactionDetailsDialogProp) {
     console.log(transaction)
-    const [currentPrice, setCurrentPrice] = useState(0);
-    useEffect(() => {
-        async function getPrice() {
-            await getCurrentPrice(transaction.mint)
-        }
-        getPrice()
-    }, [currentPrice])
+    // const [currentPrice, setCurrentPrice] = useState(0);
+    // useEffect(() => {
+    //     async function getPrice() {
+    //         await getCurrentPrice(transaction.mint)
+    //     }
+    //     getPrice()
+    // }, [currentPrice])
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
 

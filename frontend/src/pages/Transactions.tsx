@@ -1,4 +1,4 @@
-import { FormatAsset } from "@/components/FormatAsset";
+
 import { Loader } from "@/components/Loader";
 import { TableContent } from "@/components/TableContent";
 import { TransactionDetailsDialogBox } from "@/components/TransactionDetailsDialogBox";
@@ -7,13 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { transactionColor, transactionIcons, type TxType } from "@/constants/transactionsIcons";
+
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useInfiniteTransactions, useTransactions } from "@/hooks/useTransactions";
-import { getCurrentPrice } from "@/services/fetchPrices";
-import { copyToClipboard, formatUnixTimestamp, openSolscan } from "@/utils/common";
-import { CheckCheck, ChevronRight, Copy, ExternalLink, Search, Wallet } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { useInfiniteTransactions } from "@/hooks/useTransactions";
+import { Search, Wallet } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom"
 import { useInView } from "react-intersection-observer";
 import { Footer } from "@/components/Footer";
@@ -55,10 +53,10 @@ export function Transactions() {
     // const { data: transactions, isLoading, error } = useTransactions(walletAddress, 1, 10);
     const {
         data: transactions,
-        error,
+        // error,
         fetchNextPage,
         hasNextPage,
-        isFetching,
+        // isFetching,
         isFetchingNextPage,
         status,
     } = useInfiniteTransactions(walletAddress, 20);
