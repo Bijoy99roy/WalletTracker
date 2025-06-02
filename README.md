@@ -2,6 +2,8 @@
 
 A modern wallet tracker for solana ecosystem
 
+![alt text](image.png)
+
 ## Backend
 
 - Helius API
