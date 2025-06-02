@@ -58,7 +58,7 @@ fetchTransactionRouter.post("/get", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({
-      error: "Failed to fetch transactions",
+      error: `Failed to fetch transactions: ${error}`,
     });
   }
 });
