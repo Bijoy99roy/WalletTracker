@@ -2,7 +2,7 @@ let PRICE_CACHE = new Map<string, number>();
 
 export async function getCurrentPrice(mint: string): Promise<number> {
   if (PRICE_CACHE.has(mint)) return PRICE_CACHE.get(mint)!;
-  console.log(mint);
+
   const res = await fetch(
     `https://public-api.birdeye.so/defi/price?address=${mint}`,
     {

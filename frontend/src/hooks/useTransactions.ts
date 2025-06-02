@@ -21,7 +21,9 @@ export const useInfiniteTransactions = (wallet: string, limit: number = 10) => {
     queryFn: ({ pageParam }) => getTransactions(wallet, pageParam),
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) => {
-      console.log("lastPage:", lastPage);
+      if (lastPage.length === 0) {
+        return undefined;
+      }
       return allPages.length + 1;
     },
     enabled: !!wallet,

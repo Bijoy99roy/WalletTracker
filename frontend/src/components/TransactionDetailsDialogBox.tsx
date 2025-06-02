@@ -2,11 +2,13 @@
 import { transactionIcons, type TxType } from "@/constants/transactionsIcons";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Button } from "./ui/button";
-import { Copy, ExternalLink } from "lucide-react";
+import { CheckCheck, Copy, ExternalLink } from "lucide-react";
 import { copyToClipboard, formatUnixTimestamp, openSolscan } from "@/utils/common";
 // import { getCurrentPrice } from "@/services/fetchPrices";
 // import { useEffect, useState } from "react";
 import { FormatAsset } from "./FormatAsset";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 
 interface TransactionDetailsDialogProp {
@@ -16,18 +18,20 @@ interface TransactionDetailsDialogProp {
 }
 
 export function TransactionDetailsDialogBox({ transaction, open, onOpenChange }: TransactionDetailsDialogProp) {
-    console.log(transaction)
-    // const [currentPrice, setCurrentPrice] = useState(0);
-    // useEffect(() => {
-    //     async function getPrice() {
-    //         await getCurrentPrice(transaction.mint)
-    //     }
-    //     getPrice()
-    // }, [currentPrice])
+    const [clickCopy, setClickCopy] = useState(false)
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+        if (clickCopy) {
+            timer = setTimeout(() => {
+                setClickCopy(false);
+            }, 5000);
+        }
+        return () => clearTimeout(timer);
+    }, [clickCopy]);
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog open={open} onOpenChange={onOpenChange} >
 
-            <DialogContent className="backdrop-blur-xl md:!max-w-[650px] w-full">
+            <DialogContent className="backdrop-blur-xl md:!max-w-[650px] sm:!max-w-[500px] w-96">
 
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-3">
@@ -59,7 +63,7 @@ export function TransactionDetailsDialogBox({ transaction, open, onOpenChange }:
                             </div>
                             <div>
                                 <h3 className="text-muted-foreground mb-1 font-medium">Transaction Fee</h3>
-                                <p className="font-medium">{transaction.fees} SOL</p>
+                                <p className="font-medium">{transaction.fees / 1e9} SOL</p>
 
                             </div>
                         </div>
@@ -82,10 +86,14 @@ export function TransactionDetailsDialogBox({ transaction, open, onOpenChange }:
                             View on Solscan
                         </Button>
                         <Button
-                            onClick={() => copyToClipboard(transaction.signature)}
+                            onClick={() => {
+                                copyToClipboard(transaction.signature)
+                                setClickCopy(true)
+                                toast.success('Transaction Signature copied to clipboard')
+                            }}
 
                             className="bg-secondary text-white hover:text-foreground hover:bg-accent cursor-pointer w-60  md:w-fit">
-                            <Copy className="mr-2" />
+                            {clickCopy ? <CheckCheck className="mr-2" /> : <Copy className="mr-2" />}
                             Copy Signature
                         </Button>
                     </div>

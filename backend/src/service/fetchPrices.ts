@@ -5,7 +5,7 @@ export async function getCurrentPrice(mint: string): Promise<number> {
     `https://public-api.birdeye.so/defi/price?address=${mint}`,
     {
       headers: {
-        "X-API-KEY": process.env.BIRD_EYE_API_KEY!,
+        "X-API-KEY": process.env.VITE_BIRD_EYE_API_KEY!,
         "x-chain": "solana",
         accept: "application/json",
       },
@@ -22,7 +22,7 @@ export async function getCurrentPriceInfo(mint: string) {
     `https://public-api.birdeye.so/defi/price?address=${mint}`,
     {
       headers: {
-        "X-API-KEY": process.env.BIRD_EYE_API_KEY!,
+        "X-API-KEY": process.env.VITE_BIRD_EYE_API_KEY!,
         "x-chain": "solana",
         accept: "application/json",
       },
@@ -41,7 +41,7 @@ export async function getHistoricPrice(mint: string) {
     `https://public-api.birdeye.so/defi/history_price?address=${mint}&address_type=token&type=1H&time_from=${tenHourAgoTimeStampUnix}&time_to=${currentTimeStampUnix}`,
     {
       headers: {
-        "X-API-KEY": process.env.BIRD_EYE_API_KEY!,
+        "X-API-KEY": process.env.VITE_BIRD_EYE_API_KEY!,
         "x-chain": "solana",
         accept: "application/json",
       },
@@ -50,6 +50,6 @@ export async function getHistoricPrice(mint: string) {
   const data = await res.json();
 
   const historicalPrice = data.data;
-  console.log(historicalPrice);
+
   return historicalPrice;
 }

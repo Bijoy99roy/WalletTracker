@@ -8,12 +8,11 @@ export async function syncNewTransactionsNow(wallet: string) {
     select: { signature: true },
   });
 
-  const url = `https://api.helius.xyz/v0/addresses/${wallet}/transactions?limit=100&api-key=${process.env.HELIUS_API_KEY}`;
+  const url = `https://api.helius.xyz/v0/addresses/${wallet}/transactions?limit=100&api-key=${process.env.VITE_HELIUS_API_KEY}`;
   const res = await fetch(url);
   const txs = await res.json();
 
   for (const tx of txs) {
-    console.log(tx);
     if (tx.signature === latest?.signature) break;
 
     const parsed = await parseTx(tx, wallet);

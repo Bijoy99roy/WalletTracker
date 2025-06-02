@@ -71,7 +71,7 @@ walletRouter.post("/getTokens", async (req, res) => {
         let token: Token = {};
         // const historicalPrice = await limitedFetchHistoricalPrice(mint);
         const currentTokenPrice = await limitedFetchPrice(mint);
-        console.log(currentTokenPrice);
+
         if (
           currentTokenPrice?.priceChange24h &&
           currentTokenPrice.value > 0.0001

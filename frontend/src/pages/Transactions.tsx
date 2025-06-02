@@ -16,12 +16,13 @@ import { useSearchParams } from "react-router-dom"
 import { useInView } from "react-intersection-observer";
 import { Footer } from "@/components/Footer";
 
+
 export function Transactions() {
     const [searchParams, setSearchParams] = useSearchParams();
     const [walletAddress, setWalletAddress] = useState(searchParams.get('wallet') || '')
     const [selectedTransaction, setSelectedTransaction] = useState(null)
     const [dialogueOpen, setDialogueOpen] = useState(false)
-    const [clickCopy, setClickCopy] = useState(false)
+    const [clickCopy, setClickCopy] = useState("")
 
     const { ref, inView } = useInView()
     const isMobile = useIsMobile()
@@ -32,7 +33,6 @@ export function Transactions() {
     };
 
     function handleTransactionClick(transaction: any) {
-        console.log(transaction)
         setSelectedTransaction(transaction)
         setDialogueOpen(true)
     }
@@ -43,7 +43,7 @@ export function Transactions() {
         let timer: NodeJS.Timeout;
         if (clickCopy) {
             timer = setTimeout(() => {
-                setClickCopy(false);
+                setClickCopy("");
             }, 5000);
         }
         return () => clearTimeout(timer);
@@ -62,17 +62,18 @@ export function Transactions() {
     } = useInfiniteTransactions(walletAddress, 20);
     useEffect(() => {
         if (inView) {
-            console.log("Fetching")
+
             fetchNextPage();
-            console.log("Fetched")
+
         }
     }, [fetchNextPage, inView])
 
     const allTransactions = transactions?.pages.flatMap(page => page) || [];
     const hasTransactions = allTransactions.length > 0;
 
-    return <div className=" relative w-full">
-        <div className=" w-full space-y-5 px-6">
+
+    return <div className="relative w-full h-96">
+        <div className=" absolute w-full space-y-5 px-6">
             <header className="flex items-center gap-4 backdrop-blur-md border-b p-7.5">
                 <SidebarTrigger className="hover:bg-accent" />
                 <h1 className="text-2xl font-bold">Transaction History</h1>
@@ -106,7 +107,8 @@ export function Transactions() {
             </div>
 
             {/* Transaction List */}
-            <Card className="backdrop-blur-xl">
+
+            <Card className="backdrop-blur-xl ">
                 <CardHeader>
                     <CardTitle>Transactions</CardTitle>
                 </CardHeader>
@@ -121,6 +123,7 @@ export function Transactions() {
                                     <p className="text-muted-foreground">This wallet doesn't have any transaction history yet.</p>
                                 </div>
                             ) : (
+                                // <ScrollArea className="w-full  sm:h-[600px] md:h-[500px]">
                                 <Table>
                                     <TableHeader>
                                         <TableRow className="hover:bg-transparent">
@@ -133,6 +136,7 @@ export function Transactions() {
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
+
                                         {transactions?.pages.map((transaction, i) => (
 
 
@@ -140,7 +144,9 @@ export function Transactions() {
 
 
                                         ))
+
                                         }
+
 
                                         {hasNextPage && (
                                             <TableRow ref={ref}>
@@ -152,7 +158,7 @@ export function Transactions() {
 
                                     </TableBody>
                                 </Table>
-
+                                // </ScrollArea>
 
                             )
                         )
@@ -161,8 +167,13 @@ export function Transactions() {
                 </CardContent>
 
             </Card>
+
+
+            <Footer />
+
         </div>
         {/* Only opens dialg if in mobile view */}
+
         {
             (selectedTransaction && isMobile) && <TransactionDetailsDialogBox
                 transaction={selectedTransaction}
@@ -170,6 +181,8 @@ export function Transactions() {
                 onOpenChange={setDialogueOpen}
             />
         }
-        <Footer />
+
+
+
     </div >
 }

@@ -8,7 +8,7 @@ import { ThemeProvider } from './provider/theme-provider';
 import { Transactions } from './pages/Transactions';
 import { AppSidebar } from './components/AppSidebar';
 import { Analytics } from './pages/Analytics';
-
+import { Toaster } from 'sonner'
 
 const queryClient = new QueryClient()
 
@@ -17,6 +17,7 @@ function AppContent() {
   const showSidebar = location.pathname !== '/';
   return (
     <div className="max-h-screen flex w-full bg-background" >
+      <Toaster />
       {
         showSidebar && <AppSidebar />
       }

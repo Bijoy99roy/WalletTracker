@@ -23,6 +23,6 @@ export function formatUnixTimestamp(unix: number) {
 
 export function getEnvironmentBaseApi() {
   return import.meta.env.VITE_ENVIRONMENT === "PROD"
-    ? "/api"
+    ? ""
     : "http://localhost:3000";
 }

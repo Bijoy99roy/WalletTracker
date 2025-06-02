@@ -1,6 +1,6 @@
 import { Activity, BarChart3, Wallet } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
 
 export function AppSidebar() {
     const navigate = useNavigate()
@@ -17,7 +17,7 @@ export function AppSidebar() {
             icon: BarChart3,
         },
     ];
-
+    const { setOpenMobile } = useSidebar();
     return (
         <Sidebar className="border-r">
             <SidebarHeader className="p-6 border-b">
@@ -53,6 +53,7 @@ export function AppSidebar() {
                                                 if (walletAddress) {
                                                     navigate(`${item.url}?wallet=${encodeURIComponent(walletAddress.trim())}`)
                                                 }
+                                                setOpenMobile(false)
 
 
 

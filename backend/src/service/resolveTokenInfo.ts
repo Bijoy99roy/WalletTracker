@@ -4,7 +4,7 @@ type TokenInfo = {
 };
 export async function getTokenSymbol(mint: string): Promise<TokenInfo> {
   const response = await fetch(
-    `https://mainnet.helius-rpc.com/?api-key=${process.env.HELIUS_API_KEY}`,
+    `https://mainnet.helius-rpc.com/?api-key=${process.env.VITE_HELIUS_API_KEY}`,
     {
       method: "POST",
       headers: {

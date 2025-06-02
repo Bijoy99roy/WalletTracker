@@ -18,7 +18,7 @@ export async function fetchOlderFromHelius(wallet: string): Promise<number> {
   const before = lastBlock?.signature;
   const url = `https://api.helius.xyz/v0/addresses/${wallet}/transactions?limit=100${
     before ? `&before=${before}` : ""
-  }&api-key=${process.env.HELIUS_API_KEY}`;
+  }&api-key=${process.env.VITE_HELIUS_API_KEY}`;
 
   const res = await fetch(url);
   const txs = await res.json();

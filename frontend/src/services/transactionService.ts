@@ -5,7 +5,6 @@ export async function getTransactions(
   page: number,
   limit: number = 20
 ) {
-  console.log(page);
   try {
     const payload = {
       walletAddress: walletAddress,
